@@ -11,8 +11,8 @@ const Checkout = () => {
   const [user, setUser] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
   const [showProducts, setShowProducts] = useState(false);
-  const [showLoginForm, setShowLoginForm] = useState(false); // State to toggle login form
-  const [showRegisterForm, setShowRegisterForm] = useState(false); // State to toggle register form
+  const [showLoginForm, setShowLoginForm] = useState(false); 
+  const [showRegisterForm, setShowRegisterForm] = useState(false); 
 
   useEffect(() => {
     const authorize = async () => {
@@ -43,7 +43,7 @@ const Checkout = () => {
           console.log("Products fetched:", responseData.data);
         } else {
           console.error("Failed to fetch products, status:", response.status);
-          alert("Could not fetch products. Status code: " + response.status);
+          alert("Kunde inte hämta produkter. Status kod: " + response.status);
         }
       } catch (error) {
         const typedError = error as Error;
@@ -64,7 +64,7 @@ const Checkout = () => {
         body: JSON.stringify({ email: loginEmail, password: loginPassword }),
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "Login failed");
+      if (!response.ok) throw new Error(data.message || "Inloggning misslyckades");
       setUser(data);
       console.log("Logged in:", data);
     } catch (error) {
