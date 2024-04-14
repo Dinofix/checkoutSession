@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import { Product, useCart } from "./context/CartContext";
 
-const Payment = () => {
+const Checkout = () => {
   const { cart, addToCart } = useCart();
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
@@ -11,6 +11,8 @@ const Payment = () => {
   const [user, setUser] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
   const [showProducts, setShowProducts] = useState(false);
+  const [showLoginForm, setShowLoginForm] = useState(false); // State to toggle login form
+  const [showRegisterForm, setShowRegisterForm] = useState(false); // State to toggle register form
 
   useEffect(() => {
     const authorize = async () => {
@@ -32,7 +34,7 @@ const Payment = () => {
 
   const fetchProducts = async () => {
     if (products.length === 0) {
-      console.log("Hämtar produkter...");
+      console.log("Fetching products...");
       try {
         const response = await fetch("http://localhost:3001/payments/products");
         if (response.ok) {
@@ -66,27 +68,38 @@ const Payment = () => {
       setUser(data);
       console.log("Logged in:", data);
     } catch (error) {
-      const typedError = error as Error; 
+      const typedError = error as Error;
       console.error("Login error:", typedError.message);
-      alert(typedError.message); 
+      alert(typedError.message);
     }
   };
 
   const handleRegister = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
-    const response = await fetch("http://localhost:3001/api/auth/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      credentials: "include",
-      body: JSON.stringify({
-        email: registerEmail,
-        password: registerPassword,
-      }),
-    });
-    const data = await response.json();
-    console.log(data);
+    try {
+      const response = await fetch("http://localhost:3001/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          email: registerEmail,
+          password: registerPassword,
+        }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        console.log("Registered:", data);
+        alert("Registration successful!");
+      } else {
+        throw new Error(data.message || "Registration failed");
+      }
+    } catch (error) {
+      const typedError = error as Error;
+      console.error("Registration error:", typedError.message);
+      alert(typedError.message);
+    }
   };
 
   const logout = async () => {
@@ -127,9 +140,9 @@ const Payment = () => {
 
       const session = await response.json();
       if (response.ok && session.url) {
-        window.location.href = session.url; 
-        localStorage.removeItem("cart"); 
-        setCart([]); // 
+        window.location.href = session.url;
+        localStorage.removeItem("cart");
+        setCart([]); // Clear cart
       } else {
         console.error(
           "Failed to create checkout session:",
@@ -147,46 +160,59 @@ const Payment = () => {
 
   return (
     <div>
-      <h1>{user ? `INLOGGAD ${user}` : "UTLOGGAD"}</h1>
+      <h1>{user ? `Inloggad som ${user}` : "checkoutSession"}</h1>
 
-      <form onSubmit={handleLogin}>
-        <input
-          type="email"
-          value={loginEmail}
-          onChange={(e) => setLoginEmail(e.target.value)}
-          placeholder="Email"
-          required
-        />
-        <input
-          type="password"
-          value={loginPassword}
-          onChange={(e) => setLoginPassword(e.target.value)}
-          placeholder="Password"
-          required
-        />
-        <button type="submit">Login</button>
-      </form>
+      <button onClick={() => setShowLoginForm(!showLoginForm)}>
+        {showLoginForm ? "Dölj logga in" : "Visa logga in"}
+      </button>
 
-      <form onSubmit={handleRegister}>
-        <input
-          type="email"
-          value={registerEmail}
-          onChange={(e) => setRegisterEmail(e.target.value)}
-          placeholder="Email"
-          required
-        />
-        <input
+      {showLoginForm && (
+        <form onSubmit={handleLogin}>
+          <input
+            type="email"
+            value={loginEmail}
+            onChange={(e) => setLoginEmail(e.target.value)}
+            placeholder="Email"
+            required
+          />
+          <input
+            type="password"
+            value={loginPassword}
+            onChange={(e) => setLoginPassword(e.target.value)}
+            placeholder="Lösenord"
+            required
+          />
+          <button type="submit">Logga in</button>
+        </form>
+      )}
+
+      <button onClick={() => setShowRegisterForm(!showRegisterForm)}>
+        {showRegisterForm ? "Dölj registrering" : "Visa registrering"}
+      </button>
+
+      {showRegisterForm && (
+        <form onSubmit={handleRegister}>
+          <input
+            type="email"
+            value={registerEmail}
+            onChange={(e) => setRegisterEmail(e.target.value)}
+            placeholder="Email"
+            required
+          />
+         <input
           type="password"
           value={registerPassword}
           onChange={(e) => setRegisterPassword(e.target.value)}
-          placeholder="Password"
+          placeholder="Lösenord"
           required
         />
-        <button type="submit">Registrera</button>
-      </form>
+          <button type="submit">Registrera</button>
+        </form>
+      )}
+      <button onClick={logout}>Logga ut</button>
 
       <button onClick={fetchProducts} disabled={!user}>
-        {showProducts ? "Hide Products" : "Check Products"}
+        {showProducts ? "Hide Products" : "Show Products"}
       </button>
 
       {showProducts && products.length > 0 && (
@@ -207,19 +233,19 @@ const Payment = () => {
                 SEK
               </p>
               <button onClick={() => addToCart(product)}>
-                Lägg till i kundvagn
+                Lägg till varukorg
               </button>
             </div>
           ))}
+          <button onClick={() => handlePayment(cart)} disabled={!user}>
+            Köp
+          </button>
         </div>
       )}
 
-      <button onClick={logout}>Logout</button>
-      <button onClick={() => handlePayment(cart)} disabled={!user}>
-        Betala
-      </button>
+      
     </div>
   );
 };
 
-export default Payment;
+export default Checkout;

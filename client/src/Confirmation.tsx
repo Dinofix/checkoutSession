@@ -69,7 +69,7 @@ const Confirmation = () => {
             : "KÖP KUNDE INTE BEKRÄFTAS ❌"
           : "LADDAR..."}
       </h3>
-      <button onClick={goToStartPage}>Go to Start Page</button>
+      <button onClick={goToStartPage}>Gå till startsida</button>
     </div>
   );
 };
