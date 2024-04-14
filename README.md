@@ -8,20 +8,21 @@ För att bygga projektet gör såhär:
 
 1. Klona repot till datorn och öppna upp i VS code
 2. Klistra in .env filen i rooten på server mappen eller skapa en egen .env fil med "STRIPE_SECRET_KEY=sk_test_....."
-3. Kör igång servern med hjälp av följande kommandon:
-4. cd server
-5. npm i
-6. förutsätter att du har nodemon installerat lokalt, om du inte har det installera det med hjälp av: npm i nodemon
-7. npm start
-8. Server is up and running...🌭
-9. Öppna en ny terminal
-10. Kör igång klienten med hjälp av följande kommandon
-11. cd client
-12. npm i
-13. npm run dev
-14. klienten är igång
-15. klicka på localhost adressen i terminalen
-16. Nu är vi igång!
+3. Öppna en terminal
+4. Kör igång servern med hjälp av följande kommandon:
+5. cd server
+6. npm i
+7. förutsätter att du har nodemon installerat lokalt, om du inte har det installera det med hjälp av: npm i nodemon
+8. npm start
+9. Server is up and running...🌭
+10. Öppna en ny terminal
+11. Kör igång klienten med hjälp av följande kommandon
+12. cd client
+13. npm i
+14. npm run dev
+15. klienten är igång
+16. klicka på localhost adressen i terminalen
+17. Nu är vi igång!
 
 Projektet uppfyller kraven för G
 
