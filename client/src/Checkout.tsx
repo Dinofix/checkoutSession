@@ -91,9 +91,9 @@ const Checkout = () => {
       const data = await response.json();
       if (response.ok) {
         console.log("Registered:", data);
-        alert("Registration successful!");
+        alert("Registrering slutförd");
       } else {
-        throw new Error(data.message || "Registration failed");
+        throw new Error(data.message || "Registrering misslyckad");
       }
     } catch (error) {
       const typedError = error as Error;
@@ -114,7 +114,7 @@ const Checkout = () => {
 
   const handlePayment = async (cartItems: any[]) => {
     if (cartItems.length === 0) {
-      alert("Your cart is empty.");
+      alert("Din kundkorg är tom");
       return;
     }
 
@@ -148,12 +148,12 @@ const Checkout = () => {
           "Failed to create checkout session:",
           session.message || "Unknown error"
         );
-        alert("Failed to create checkout session. Please try again.");
+        alert("Kunde inte checka ut, testa igen");
       }
     } catch (error) {
       console.error("Payment error:", error);
       alert(
-        "An error occurred while processing your payment. Please try again."
+        "Ett fel uppstod vid köp, testa igen"
       );
     }
   };
@@ -212,7 +212,7 @@ const Checkout = () => {
       <button onClick={logout}>Logga ut</button>
 
       <button onClick={fetchProducts} disabled={!user}>
-        {showProducts ? "Hide Products" : "Show Products"}
+        {showProducts ? "Göm produkter" : "Visa produkter"}
       </button>
 
       {showProducts && products.length > 0 && (
@@ -238,7 +238,7 @@ const Checkout = () => {
             </div>
           ))}
           <button onClick={() => handlePayment(cart)} disabled={!user}>
-            Köp
+            Skicka pengar
           </button>
         </div>
       )}
