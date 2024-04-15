@@ -9,19 +9,10 @@ const Confirmation = () => {
   useEffect(() => {
     const verifySession = async () => {
       console.log("Running verification function");
-      const dataFromLs = localStorage.getItem("sessionId");
+      const sessionId = localStorage.getItem("checkoutSessionId");
 
-      if (!dataFromLs) {
+      if (!sessionId) {
         console.error("No session ID found in local storage");
-        setIsLoading(false);
-        return; 
-      }
-
-      let sessionId;
-      try {
-        sessionId = JSON.parse(dataFromLs);
-      } catch (error) {
-        console.error("Error parsing session ID from local storage:", error);
         setIsLoading(false);
         return;
       }
@@ -38,24 +29,26 @@ const Confirmation = () => {
           }
         );
 
+        const data = await response.json();
+
         if (!response.ok) {
-          throw new Error("Failed to verify session");
+          throw new Error(data.error || "Failed to verify session");
         }
 
-        const data = await response.json();
         setVerified(data.verified);
+        if (!data.verified) {
+          setTimeout(() => navigate("/"), 5000);
+        }
       } catch (error) {
         console.error("Error verifying session:", error);
       } finally {
+        localStorage.removeItem("checkoutSessionId");
         setIsLoading(false);
       }
     };
 
-    if (!verified) {
-      verifySession();
-    }
-  }, [verified]);
-
+    verifySession();
+  }, [navigate]);
   const goToStartPage = () => {
     navigate("/");
   };

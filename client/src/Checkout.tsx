@@ -117,14 +117,14 @@ const Checkout = () => {
       alert("Din kundkorg är tom");
       return;
     }
-
+  
     const payload = cartItems.map(
       (item: { product: { default_price: { id: any } }; quantity: any }) => ({
         product: item.product.default_price.id,
         quantity: item.quantity,
       })
     );
-
+  
     try {
       const response = await fetch(
         "http://localhost:3001/payments/create-checkout-session",
@@ -137,12 +137,13 @@ const Checkout = () => {
           credentials: "include",
         }
       );
-
+  
       const session = await response.json();
-      if (response.ok && session.url) {
+      if (response.ok && session.url && session.sessionId) {
+        localStorage.setItem('checkoutSessionId', session.sessionId);
         window.location.href = session.url;
         localStorage.removeItem("cart");
-        setCart([]); // Clear cart
+        setCart([]);
       } else {
         console.error(
           "Failed to create checkout session:",
@@ -157,6 +158,7 @@ const Checkout = () => {
       );
     }
   };
+  
 
   return (
     <div>
