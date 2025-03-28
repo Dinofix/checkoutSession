@@ -1,1 +1,7 @@
-[]
+[
+  {
+    "email": "lurxy@outlook.com",
+    "password": "$2b$10$CHqNb.sRwNF0ICUDlgSFruczPe.r0dFFkuBFHPFoCNZrr9rO1.M8u",
+    "stripeCustomerId": "cus_S1pHXvdkPA8Atq"
+  }
+]
