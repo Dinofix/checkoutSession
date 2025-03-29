@@ -3,7 +3,7 @@ import "./App.css";
 import { Product, useCart } from "./context/CartContext";
 
 const Checkout = () => {
-  const { cart, addToCart } = useCart();
+  const { cart, addToCart, setCart } = useCart();
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
@@ -11,14 +11,17 @@ const Checkout = () => {
   const [user, setUser] = useState("");
   const [products, setProducts] = useState<Product[]>([]);
   const [showProducts, setShowProducts] = useState(false);
-  const [showLoginForm, setShowLoginForm] = useState(false); 
-  const [showRegisterForm, setShowRegisterForm] = useState(false); 
+  const [showLoginForm, setShowLoginForm] = useState(false);
+  const [showRegisterForm, setShowRegisterForm] = useState(false);
 
   useEffect(() => {
     const authorize = async () => {
-      const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/auth/authorize", {
-        credentials: "include",
-      });
+      const response = await fetch(
+        import.meta.env.VITE_BACKEND_URL + "/api/auth/authorize",
+        {
+          credentials: "include",
+        }
+      );
 
       const data = await response.json();
       console.log("Response from server:", data);
@@ -36,7 +39,9 @@ const Checkout = () => {
     if (products.length === 0) {
       console.log("Fetching products...");
       try {
-        const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/payments/products");
+        const response = await fetch(
+          import.meta.env.VITE_BACKEND_URL + "/payments/products"
+        );
         if (response.ok) {
           const responseData = await response.json();
           setProducts(responseData.data);
@@ -57,14 +62,18 @@ const Checkout = () => {
   const handleLogin = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     try {
-      const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ email: loginEmail, password: loginPassword }),
-      });
+      const response = await fetch(
+        import.meta.env.VITE_BACKEND_URL + "/api/auth/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ email: loginEmail, password: loginPassword }),
+        }
+      );
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "Inloggning misslyckades");
+      if (!response.ok)
+        throw new Error(data.message || "Inloggning misslyckades");
       setUser(data);
       console.log("Logged in:", data);
     } catch (error) {
@@ -77,17 +86,20 @@ const Checkout = () => {
   const handleRegister = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     try {
-      const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include",
-        body: JSON.stringify({
-          email: registerEmail,
-          password: registerPassword,
-        }),
-      });
+      const response = await fetch(
+        import.meta.env.VITE_BACKEND_URL + "/api/auth/register",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({
+            email: registerEmail,
+            password: registerPassword,
+          }),
+        }
+      );
       const data = await response.json();
       if (response.ok) {
         console.log("Registered:", data);
@@ -103,10 +115,13 @@ const Checkout = () => {
   };
 
   const logout = async () => {
-    const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/auth/logout", {
-      method: "POST",
-      credentials: "include",
-    });
+    const response = await fetch(
+      import.meta.env.VITE_BACKEND_URL + "/api/auth/logout",
+      {
+        method: "POST",
+        credentials: "include",
+      }
+    );
     if (response.status === 200) {
       setUser("");
     }
@@ -117,30 +132,27 @@ const Checkout = () => {
       alert("Din kundkorg är tom");
       return;
     }
-  
+
     const payload = cartItems.map(
       (item: { product: { default_price: { id: any } }; quantity: any }) => ({
         product: item.product.default_price.id,
         quantity: item.quantity,
       })
     );
-  
+
     try {
-      const response = await fetch(
-        import.meta.env.VITE_BACKEND_URL ,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(payload),
-          credentials: "include",
-        }
-      );
-  
+      const response = await fetch(import.meta.env.VITE_BACKEND_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+        credentials: "include",
+      });
+
       const session = await response.json();
       if (response.ok && session.url && session.sessionId) {
-        localStorage.setItem('checkoutSessionId', session.sessionId);
+        localStorage.setItem("checkoutSessionId", session.sessionId);
         window.location.href = session.url;
         localStorage.removeItem("cart");
         setCart([]);
@@ -153,12 +165,9 @@ const Checkout = () => {
       }
     } catch (error) {
       console.error("Payment error:", error);
-      alert(
-        "Ett fel uppstod vid köp, testa igen"
-      );
+      alert("Ett fel uppstod vid köp, testa igen");
     }
   };
-  
 
   return (
     <div>
@@ -201,13 +210,13 @@ const Checkout = () => {
             placeholder="Email"
             required
           />
-         <input
-          type="password"
-          value={registerPassword}
-          onChange={(e) => setRegisterPassword(e.target.value)}
-          placeholder="Lösenord"
-          required
-        />
+          <input
+            type="password"
+            value={registerPassword}
+            onChange={(e) => setRegisterPassword(e.target.value)}
+            placeholder="Lösenord"
+            required
+          />
           <button type="submit">Registrera</button>
         </form>
       )}
@@ -244,8 +253,6 @@ const Checkout = () => {
           </button>
         </div>
       )}
-
-      
     </div>
   );
 };
