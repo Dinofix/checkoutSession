@@ -19,7 +19,7 @@ const Confirmation = () => {
 
       try {
         const response = await fetch(
-          "http://localhost:3001/payments/verify-session",
+          import.meta.env.VITE_BACKEND_URL + "/payments/verify-session",
           {
             method: "POST",
             headers: {
