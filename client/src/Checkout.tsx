@@ -16,7 +16,7 @@ const Checkout = () => {
 
   useEffect(() => {
     const authorize = async () => {
-      const response = await fetch("http://localhost:3001/api/auth/authorize", {
+      const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/auth/authorize", {
         credentials: "include",
       });
 
@@ -36,7 +36,7 @@ const Checkout = () => {
     if (products.length === 0) {
       console.log("Fetching products...");
       try {
-        const response = await fetch("http://localhost:3001/payments/products");
+        const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/payments/products");
         if (response.ok) {
           const responseData = await response.json();
           setProducts(responseData.data);
@@ -57,7 +57,7 @@ const Checkout = () => {
   const handleLogin = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:3001/api/auth/login", {
+      const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -77,7 +77,7 @@ const Checkout = () => {
   const handleRegister = async (e: { preventDefault: () => void }) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:3001/api/auth/register", {
+      const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -103,7 +103,7 @@ const Checkout = () => {
   };
 
   const logout = async () => {
-    const response = await fetch("http://localhost:3001/api/auth/logout", {
+    const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/api/auth/logout", {
       method: "POST",
       credentials: "include",
     });
@@ -127,7 +127,7 @@ const Checkout = () => {
   
     try {
       const response = await fetch(
-        "http://localhost:3001/payments/create-checkout-session",
+        import.meta.env.VITE_BACKEND_URL ,
         {
           method: "POST",
           headers: {

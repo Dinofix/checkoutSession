@@ -8,13 +8,15 @@ const userRouter = require("./resources/users/users.router");
 const authRouter = require("./resources/auth/auth.router");
 const stripeRouter = require("./resources/stripe/stripe.router");
 
+const allowedOrigins = [process.env.FRONTEND_URL];
+
 const key1 = crypto.randomBytes(32).toString('hex');
 const key2 = crypto.randomBytes(32).toString('hex');
 
 const app = express();
 
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: allowedOrigins,
   credentials: true,
 }));
 
