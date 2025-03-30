@@ -38,6 +38,9 @@ app.use(
     name: "session",
     keys: [key1, key2],
     maxAge: 24 * 60 * 60 * 1000,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "none",
+    domain: process.env.COOKIE_DOMAIN,
   })
 );
 
