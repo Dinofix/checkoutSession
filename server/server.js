@@ -15,14 +15,20 @@ const key2 = crypto.randomBytes(32).toString("hex");
 
 const app = express();
 
+app.use(express.json());
+
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
-
-app.use(express.json());
 
 app.use(
   cookieSession({
@@ -31,6 +37,11 @@ app.use(
     maxAge: 24 * 60 * 60 * 1000,
   })
 );
+
+// Health check endpoint
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
 
 app.use("/api/users", userRouter);
 app.use("/api/auth", authRouter);
