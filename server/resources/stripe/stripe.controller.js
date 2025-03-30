@@ -26,8 +26,8 @@ const createCheckoutSession = async (req, res) => {
           quantity: item.quantity,
         };
       }),
-      success_url: "http://localhost:5173/confirmation",
-      cancel_url: "http://localhost:5173/",
+      success_url: `${process.env.FRONTEND_URL}/confirmation`,
+      cancel_url: process.env.FRONTEND_URL,
     });
 
     console.log("Checkout session created:", session.id);
