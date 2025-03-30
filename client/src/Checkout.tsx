@@ -3,7 +3,7 @@ import "./App.css";
 import { Product, useCart } from "./context/CartContext";
 
 const Checkout = () => {
-  const { cart, addToCart, setCart } = useCart();
+  const { cart, addToCart } = useCart();
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
