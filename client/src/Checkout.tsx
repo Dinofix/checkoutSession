@@ -40,7 +40,10 @@ const Checkout = () => {
       console.log("Fetching products...");
       try {
         const response = await fetch(
-          import.meta.env.VITE_BACKEND_URL + "/payments/products"
+          import.meta.env.VITE_BACKEND_URL + "/payments/products",
+          {
+            credentials: "include",
+          }
         );
         if (response.ok) {
           const responseData = await response.json();
@@ -141,14 +144,17 @@ const Checkout = () => {
     );
 
     try {
-      const response = await fetch(import.meta.env.VITE_BACKEND_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-        credentials: "include",
-      });
+      const response = await fetch(
+        import.meta.env.VITE_BACKEND_URL + "/payments/create-checkout-session",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+          credentials: "include",
+        }
+      );
 
       const session = await response.json();
       if (response.ok && session.url && session.sessionId) {
