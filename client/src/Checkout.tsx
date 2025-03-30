@@ -141,7 +141,7 @@ const Checkout = () => {
     );
 
     try {
-      const response = await fetch(import.meta.env.VITE_BACKEND_URL, {
+      const response = await fetch(import.meta.env.VITE_BACKEND_URL + "/payments/create-checkout-session", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
