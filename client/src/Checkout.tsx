@@ -40,7 +40,13 @@ const Checkout = () => {
       console.log("Fetching products...");
       try {
         const response = await fetch(
-          import.meta.env.VITE_BACKEND_URL + "/payments/products"
+          import.meta.env.VITE_BACKEND_URL + "/payments/products",
+          {
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
         );
         if (response.ok) {
           const responseData = await response.json();
@@ -48,12 +54,9 @@ const Checkout = () => {
           console.log("Products fetched:", responseData.data);
         } else {
           console.error("Failed to fetch products, status:", response.status);
-          alert("Kunde inte hämta produkter. Status kod: " + response.status);
         }
       } catch (error) {
-        const typedError = error as Error;
-        console.error("Login error:", typedError.message);
-        alert(typedError.message);
+        console.error("Error fetching products:", error);
       }
     }
     setShowProducts(!showProducts);
@@ -66,20 +69,28 @@ const Checkout = () => {
         import.meta.env.VITE_BACKEND_URL + "/api/auth/login",
         {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
           credentials: "include",
-          body: JSON.stringify({ email: loginEmail, password: loginPassword }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: loginEmail,
+            password: loginPassword,
+          }),
         }
       );
+
       const data = await response.json();
-      if (!response.ok)
-        throw new Error(data.message || "Inloggning misslyckades");
-      setUser(data);
-      console.log("Logged in:", data);
+      console.log("Login response:", data);
+
+      if (response.status === 200) {
+        setUser(data);
+        setShowLoginForm(false);
+      } else {
+        console.error("Login failed:", data.error);
+      }
     } catch (error) {
-      const typedError = error as Error;
-      console.error("Login error:", typedError.message);
-      alert(typedError.message);
+      console.error("Login error:", error);
     }
   };
 
@@ -90,84 +101,78 @@ const Checkout = () => {
         import.meta.env.VITE_BACKEND_URL + "/api/auth/register",
         {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
           },
-          credentials: "include",
           body: JSON.stringify({
             email: registerEmail,
             password: registerPassword,
           }),
         }
       );
+
       const data = await response.json();
-      if (response.ok) {
-        console.log("Registered:", data);
-        alert("Registrering slutförd");
+      console.log("Register response:", data);
+
+      if (response.status === 201) {
+        setUser(data);
+        setShowRegisterForm(false);
       } else {
-        throw new Error(data.message || "Registrering misslyckad");
+        console.error("Registration failed:", data.error);
       }
     } catch (error) {
-      const typedError = error as Error;
-      console.error("Registration error:", typedError.message);
-      alert(typedError.message);
+      console.error("Registration error:", error);
     }
   };
 
   const logout = async () => {
-    const response = await fetch(
-      import.meta.env.VITE_BACKEND_URL + "/api/auth/logout",
-      {
-        method: "POST",
-        credentials: "include",
+    try {
+      const response = await fetch(
+        import.meta.env.VITE_BACKEND_URL + "/api/auth/logout",
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setUser("");
+      } else {
+        console.error("Logout failed");
       }
-    );
-    if (response.status === 200) {
-      setUser("");
+    } catch (error) {
+      console.error("Logout error:", error);
     }
   };
 
   const handlePayment = async (cartItems: any[]) => {
-    if (cartItems.length === 0) {
-      alert("Din kundkorg är tom");
-      return;
-    }
-
-    const payload = cartItems.map(
-      (item: { product: { default_price: { id: any } }; quantity: any }) => ({
-        product: item.product.default_price.id,
-        quantity: item.quantity,
-      })
-    );
-
     try {
       const response = await fetch(
         import.meta.env.VITE_BACKEND_URL + "/payments/create-checkout-session",
         {
           method: "POST",
+          credentials: "include",
           headers: {
             "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-        credentials: "include",
-      });
+          },
+          body: JSON.stringify(cartItems),
+        }
+      );
 
-      const session = await response.json();
-      if (response.ok && session.url && session.sessionId) {
-        localStorage.setItem("checkoutSessionId", session.sessionId);
-        window.location.href = session.url;
-        localStorage.removeItem("cart");
-        setCart([]);
+      const data = await response.json();
+      console.log("Payment response:", data);
+
+      if (response.status === 200) {
+        window.location.href = data.url;
       } else {
-        console.error(
-          "Failed to create checkout session:",
-          session.message || "Unknown error"
-        );
-        alert("Kunde inte checka ut, testa igen");
+        console.error("Payment failed:", data.error);
       }
     } catch (error) {
       console.error("Payment error:", error);
-      alert("Ett fel uppstod vid köp, testa igen");
     }
   };
 

@@ -27,6 +27,8 @@ app.use(
       }
     },
     credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
@@ -35,6 +37,10 @@ app.use(
     name: "session",
     keys: [key1, key2],
     maxAge: 24 * 60 * 60 * 1000,
+    secure: true,
+    sameSite: "none",
+    httpOnly: true,
+    domain: process.env.NODE_ENV === "production" ? ".vercel.app" : undefined,
   })
 );
 
