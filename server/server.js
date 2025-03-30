@@ -8,27 +8,39 @@ const userRouter = require("./resources/users/users.router");
 const authRouter = require("./resources/auth/auth.router");
 const stripeRouter = require("./resources/stripe/stripe.router");
 
-const allowedOrigins = [process.env.FRONTEND_URL];
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  "https://checkout-session.vercel.app",
+  "https://checkout-session-adnan-ajdinovics-projects.vercel.app",
+];
 
 const key1 = crypto.randomBytes(32).toString("hex");
 const key2 = crypto.randomBytes(32).toString("hex");
 
 const app = express();
 
+app.use(express.json());
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
-
-app.use(express.json());
 
 app.use(
   cookieSession({
     name: "session",
     keys: [key1, key2],
     maxAge: 24 * 60 * 60 * 1000,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "none",
+    domain: process.env.COOKIE_DOMAIN,
   })
 );
 
